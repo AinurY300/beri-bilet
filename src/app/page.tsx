@@ -1,23 +1,23 @@
 import { TicketSearchForm } from "@/components/forms/TicketSearchForm"
-import { Separator } from "@/components/ui/separator"
 import { FlightSearchParams } from "@/components/forms/TicketSearchForm"
 import { fetchPricesForDates } from "@/lib/travelpayouts"
 import { FlightCard } from "@/components/flightCard"
 import { nanoid } from "nanoid"
+import { TicketSearchFilter } from "@/components/forms/TicketSearchFilter"
+import { TicketSearchPagination } from "@/components/forms/TicketSearchPagination"
+import { FilterSearchParams } from "@/components/forms/TicketSearchFilter"
 
-export default async function Home({ searchParams }: { searchParams: FlightSearchParams }) {
+export default async function Home({
+  searchParams
+}: {
+  searchParams: FlightSearchParams & FilterSearchParams
+}) {
   const flights = await fetchPricesForDates(searchParams)
-  
-
-  // console.log(data)
-
   return (
-    <div className="container grid grid-cols-12">
-      <div className="col-span-full">
-        <TicketSearchForm />
-      </div>
-      <div className="col-span-4"></div>
-      <div className="col-span-8 grid gap-2 py-2">
+    <div className="container grid gap-4 pb-4">
+      <TicketSearchForm />
+      <TicketSearchFilter />
+      <div className="grid gap-2 lg:grid-cols-2">
         {flights.map(flight => (
           <FlightCard key={nanoid()} flightData={flight} />
         ))}

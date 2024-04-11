@@ -1,4 +1,5 @@
 import type { FlightSearchParams } from "@/components/forms/TicketSearchForm"
+import type { FilterSearchParams } from "@/components/forms/TicketSearchFilter"
 
 export type Flight = {
   flight_number: string
@@ -24,14 +25,16 @@ type ApiResponse = {
   success: boolean
 }
 
-export async function fetchPricesForDates(searchParams: FlightSearchParams) {
-  const apiUrl = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates`
+export async function fetchPricesForDates(searchParams: FlightSearchParams & FilterSearchParams) {
+  const apiUrl = `https://api.travelpayouts.com/aviasales/v3/prices_for_dates?limit=30`
 
   const params = {
     origin: searchParams.origin,
     destination: searchParams.destination,
     date_from: searchParams.departureDate,
-    return_at: searchParams.returnDate
+    return_at: searchParams.returnDate,
+    sorting: searchParams.sorting,
+    direct: searchParams.direct
   }
 
   const query = Object.entries(params)
@@ -39,7 +42,7 @@ export async function fetchPricesForDates(searchParams: FlightSearchParams) {
     .map(([key, value]) => `${key}=${encodeURIComponent(value as string)}`)
     .join("&")
 
-  const res = await fetch(`${apiUrl}?${query}`, {
+  const res = await fetch(`${apiUrl}&${query}`, {
     cache: "no-cache",
     headers: {
       "X-Access-Token": process.env.TRAVELPAYOUTS_API_TOKEN!,

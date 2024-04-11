@@ -14,6 +14,8 @@ import { Badge } from "./ui/badge"
 import Image from "next/image"
 import { format, formatDuration } from "date-fns"
 import { ru } from "date-fns/locale"
+import Link from "next/link"
+// import CitesJson from "../JSON/cites.json"
 
 const dateString: string = "2024-04-23T11:35:00+02:00"
 // const date: Date = new Date(dateString)
@@ -38,9 +40,7 @@ function getFlightDates(flight: Flight): [string, string, string | undefined, st
 }
 
 export async function FlightCard({ flightData }: { flightData: Flight }) {
-  const cites: Cites[] = await fetch("https://api.travelpayouts.com/data/ru/cities.json").then(
-    response => response.json()
-  )
+  const cites: Cites[] = require("../JSON/cites.json")
   const origin = cites.find(c => c.code === flightData.origin)!
   const destination = cites.find(c => c.code === flightData.destination)!
   const [depDate, depBackDate, retDate, retBackDate] = getFlightDates(flightData)
@@ -62,9 +62,7 @@ export async function FlightCard({ flightData }: { flightData: Flight }) {
             alt={flightData.airline}
             className="block w-auto"
           />
-          <div className="text-sm font-medium">
-            {transfersCount > 0 ? `Количество пересадок: ${transfersCount}` : `Без пересадок`}
-          </div>
+          <div className="font-semibold">{price}</div>
         </div>
       </CardHeader>
       {/* <Separator /> */}
@@ -77,18 +75,17 @@ export async function FlightCard({ flightData }: { flightData: Flight }) {
           <div className="flex flex-1 items-center">
             <Separator className="w-auto flex-1" />
             <Badge variant="outline">
-              {"В пути: " +
-                formatDuration(
-                  {
-                    minutes: flightData.duration_to % 60,
-                    hours: Math.floor(flightData.duration_to / 60)
-                  },
-                  {
-                    format: flightData.duration_to < 60 ? ["minutes"] : ["hours", "minutes"],
-                    zero: true,
-                    locale: ru
-                  }
-                )}
+              {formatDuration(
+                {
+                  minutes: flightData.duration_to % 60,
+                  hours: Math.floor(flightData.duration_to / 60)
+                },
+                {
+                  format: flightData.duration_to < 60 ? ["minutes"] : ["hours", "minutes"],
+                  zero: true,
+                  locale: ru
+                }
+              )}
             </Badge>
             <Separator className="w-auto flex-1" />
           </div>
@@ -107,18 +104,17 @@ export async function FlightCard({ flightData }: { flightData: Flight }) {
             <div className="flex flex-1 items-center">
               <Separator className="w-auto flex-1" />
               <Badge variant="outline">
-                {"В пути: " +
-                  formatDuration(
-                    {
-                      minutes: flightData.duration_back % 60,
-                      hours: Math.floor(flightData.duration_back / 60)
-                    },
-                    {
-                      format: flightData.duration_back < 60 ? ["minutes"] : ["hours", "minutes"],
-                      zero: true,
-                      locale: ru
-                    }
-                  )}
+                {formatDuration(
+                  {
+                    minutes: flightData.duration_back % 60,
+                    hours: Math.floor(flightData.duration_back / 60)
+                  },
+                  {
+                    format: flightData.duration_back < 60 ? ["minutes"] : ["hours", "minutes"],
+                    zero: true,
+                    locale: ru
+                  }
+                )}
               </Badge>
               <Separator className="w-auto flex-1" />
             </div>
@@ -130,17 +126,19 @@ export async function FlightCard({ flightData }: { flightData: Flight }) {
         )}
       </CardContent>
       <CardFooter className="gap-2 pt-2">
-        <div className="font-semibold">{price}</div>
+        <div className="text-sm font-medium">
+          {transfersCount > 0 ? `Количество пересадок: ${transfersCount}` : `Без пересадок`}
+        </div>
         <Button variant="outline" className="ml-auto">
           Подробнее
         </Button>
-        <Button>Купить</Button>
+        <Button asChild>
+          <Link target="_blank" href={`https://www.aviasales.ru${flightData.link}`}>
+            Купить
+          </Link>
+        </Button>
       </CardFooter>
       {/* <CardFooter className="grid overflow-x-auto border-t py-2">
-        <code>
-        {JSON.stringify(origin)}
-        {origin} и {destination}
-        </code>
         <code>airline: {flightData.airline}</code>
         <code>departure_at: {flightData.departure_at}</code>
         <code>return_at: {flightData.return_at}</code>

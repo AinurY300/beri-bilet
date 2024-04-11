@@ -10,7 +10,7 @@ export default function Logo() {
       <p className="text-lg font-black">
         {/* бери билеты */}
         {/* билетбери */}
-        {/* Beribilet. */}
+        Beribilet
         {/* BERIBILET */}
       </p>
     </Link>

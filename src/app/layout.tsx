@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import "./globals.css"
 import Header from "@/components/Header"
 import { Toaster } from "@/components/ui/toaster"
+import Script from "next/script"
 // Unbounded, Inter, Jost
 
 const fontSans = FontSans({
@@ -24,6 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" suppressHydrationWarning>
+      <Script src="https://emrld.cc/MzEzODAy.js?t=313802"></Script>
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
