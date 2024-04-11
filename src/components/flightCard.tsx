@@ -58,7 +58,7 @@ export async function FlightCard({ flightData }: { flightData: Flight }) {
           <Image
             width={100}
             height={50}
-            src={`http://pics.avs.io/100/50/${flightData.airline}@2x.png.`}
+            src={`http://pics.avs.io/100/50/${flightData.airline}.png.`}
             alt={flightData.airline}
             className="block w-auto"
           />
@@ -129,32 +129,12 @@ export async function FlightCard({ flightData }: { flightData: Flight }) {
         <div className="text-sm font-medium">
           {transfersCount > 0 ? `Количество пересадок: ${transfersCount}` : `Без пересадок`}
         </div>
-        <Button variant="outline" className="ml-auto">
-          Подробнее
-        </Button>
-        <Button asChild>
+        <Button asChild className="ml-auto">
           <Link target="_blank" href={`https://www.aviasales.ru${flightData.link}`}>
             Купить
           </Link>
         </Button>
       </CardFooter>
-      {/* <CardFooter className="grid overflow-x-auto border-t py-2">
-        <code>airline: {flightData.airline}</code>
-        <code>departure_at: {flightData.departure_at}</code>
-        <code>return_at: {flightData.return_at}</code>
-        <code>destination: {flightData.destination}</code>
-        <code>destination_airport: {flightData.destination_airport}</code>
-        <code>duration: {flightData.duration}</code>
-        <code>duration_back: {flightData.duration_back}</code>
-        <code>duration_to: {flightData.duration_to}</code>
-        <code>flight_number: {flightData.flight_number}</code>
-        <code>origin: {flightData.origin}</code>
-        <code>origin_airport: {flightData.origin_airport}</code>
-        <code>price: {flightData.price}</code>
-        <code>return_transfers: {flightData.return_transfers}</code>
-        <code>transfers: {flightData.transfers}</code>
-        <code>link: {flightData.link}</code>
-      </CardFooter> */}
     </Card>
   )
 }

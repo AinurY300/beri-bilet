@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <Script src="https://emrld.cc/MzEzODAy.js?t=313802"></Script>
+      <Script src="https://emrld.cc/MzEzODAy.js?t=313802" />
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
