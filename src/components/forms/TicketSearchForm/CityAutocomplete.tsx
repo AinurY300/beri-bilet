@@ -44,10 +44,11 @@ export function CityAutocomplete({ placeholder, onSelect, value }: CityAutocompl
       value={value}
       placeholder={placeholder}
       onInputChange={fetchCitesList}
+      shouldFilter={false}
       onSelect={onSelect}
       itemText={item => (
         <div className="text-xs">
-          {item.city}, <span className="text-muted-foreground">{item.code}</span>
+          {item.city}, <span className="text-muted-foreground">{item.country}</span>
         </div>
       )}
     />

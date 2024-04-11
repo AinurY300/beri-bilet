@@ -6,6 +6,7 @@ export type Flight = {
   origin_airport: string
   destination_airport: string
   departure_at: string
+  return_at?: string
   airline: string
   destination: string
   origin: string
@@ -37,8 +38,6 @@ export async function fetchPricesForDates(searchParams: FlightSearchParams) {
     .filter(([key, value]) => value !== undefined)
     .map(([key, value]) => `${key}=${encodeURIComponent(value as string)}`)
     .join("&")
-
-  console.log(query)
 
   const res = await fetch(`${apiUrl}?${query}`, {
     cache: "no-cache",

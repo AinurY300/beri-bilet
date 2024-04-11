@@ -1,4 +1,5 @@
 import type { Flight } from "@/lib/travelpayouts"
+import type { Cites } from "@/types/travelpayouts"
 import {
   Card,
   CardContent,
@@ -9,8 +10,42 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "./ui/separator"
 import { Button } from "./ui/button"
+import { Badge } from "./ui/badge"
+import Image from "next/image"
+import { format, formatDuration } from "date-fns"
+import { ru } from "date-fns/locale"
 
-export function FlightCard({ flightData }: { flightData: Flight }) {
+const dateString: string = "2024-04-23T11:35:00+02:00"
+// const date: Date = new Date(dateString)
+const dateOptions: Intl.DateTimeFormatOptions = {
+  day: "numeric",
+  month: "long",
+  hour: "numeric",
+  minute: "numeric"
+}
+
+function getFlightDates(flight: Flight): [string, string, string | undefined, string | null] {
+  const formatDate = (date: Date) => format(date, "d MMMM 'в' HH:mm", { locale: ru })
+  const departureDate = formatDate(new Date(flight.departure_at))
+  const returnDate = flight.return_at ? formatDate(new Date(flight.return_at)) : null
+  const departureBackDate = formatDate(
+    new Date(new Date(flight.departure_at).getTime() + flight.duration * 60000)
+  )
+  const returnBackDate = flight.return_at
+    ? formatDate(new Date(new Date(flight.return_at)!.getTime() + flight.duration_back * 60000))
+    : null
+  return [departureDate, departureBackDate, returnDate || undefined, returnBackDate]
+}
+
+export async function FlightCard({ flightData }: { flightData: Flight }) {
+  const cites: Cites[] = await fetch("https://api.travelpayouts.com/data/ru/cities.json").then(
+    response => response.json()
+  )
+  const origin = cites.find(c => c.code === flightData.origin)!
+  const destination = cites.find(c => c.code === flightData.destination)!
+  const [depDate, depBackDate, retDate, retBackDate] = getFlightDates(flightData)
+  const transfersCount = flightData.transfers + flightData.return_transfers
+
   const price = flightData.price.toLocaleString("ru-RU", {
     style: "currency",
     currency: "RUB"
@@ -18,35 +53,110 @@ export function FlightCard({ flightData }: { flightData: Flight }) {
 
   return (
     <Card>
-      <CardHeader></CardHeader>
-      <Separator />
-      <CardContent>
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Magnam optio, adipisci cupiditate
-        veniam sunt molestias temporibus accusamus provident nesciunt culpa excepturi harum
-        voluptate officia explicabo eveniet velit nihil itaque fugit.
+      <CardHeader className="py-2">
+        <div className="flex items-center justify-between">
+          <Image
+            width={100}
+            height={50}
+            src={`http://pics.avs.io/100/50/${flightData.airline}@2x.png.`}
+            alt={flightData.airline}
+            className="block w-auto"
+          />
+          <div className="text-sm font-medium">
+            {transfersCount > 0 ? `Количество пересадок: ${transfersCount}` : `Без пересадок`}
+          </div>
+        </div>
+      </CardHeader>
+      {/* <Separator /> */}
+      <CardContent className="grid gap-2 py-2">
+        <div className="flex gap-4">
+          <div>
+            <div className="text-xl font-medium tracking-tight">{origin.name}</div>
+            <div className="text-sm font-medium text-muted-foreground">{depDate}</div>
+          </div>
+          <div className="flex flex-1 items-center">
+            <Separator className="w-auto flex-1" />
+            <Badge variant="outline">
+              {"В пути: " +
+                formatDuration(
+                  {
+                    minutes: flightData.duration_to % 60,
+                    hours: Math.floor(flightData.duration_to / 60)
+                  },
+                  {
+                    format: flightData.duration_to < 60 ? ["minutes"] : ["hours", "minutes"],
+                    zero: true,
+                    locale: ru
+                  }
+                )}
+            </Badge>
+            <Separator className="w-auto flex-1" />
+          </div>
+          <div className="text-end">
+            <div className="text-xl font-medium tracking-tight">{destination.name}</div>
+            <div className="text-sm font-medium text-muted-foreground">{depBackDate}</div>
+          </div>
+        </div>
+
+        {retDate && (
+          <div className="flex gap-4">
+            <div>
+              <div className="text-xl font-medium tracking-tight">{destination.name}</div>
+              <div className="text-sm font-medium text-muted-foreground">{retDate}</div>
+            </div>
+            <div className="flex flex-1 items-center">
+              <Separator className="w-auto flex-1" />
+              <Badge variant="outline">
+                {"В пути: " +
+                  formatDuration(
+                    {
+                      minutes: flightData.duration_back % 60,
+                      hours: Math.floor(flightData.duration_back / 60)
+                    },
+                    {
+                      format: flightData.duration_back < 60 ? ["minutes"] : ["hours", "minutes"],
+                      zero: true,
+                      locale: ru
+                    }
+                  )}
+              </Badge>
+              <Separator className="w-auto flex-1" />
+            </div>
+            <div className="text-end">
+              <div className="text-xl font-medium tracking-tight">{origin.name}</div>
+              <div className="text-sm font-medium text-muted-foreground">{retBackDate}</div>
+            </div>
+          </div>
+        )}
       </CardContent>
-      <Separator />
-      <CardFooter className="justify-between py-2">
-        <div className="font-medium">{price}</div>
-        <Button>Подробнее</Button>
+      <CardFooter className="gap-2 pt-2">
+        <div className="font-semibold">{price}</div>
+        <Button variant="outline" className="ml-auto">
+          Подробнее
+        </Button>
+        <Button>Купить</Button>
       </CardFooter>
-      <Separator />
-      <CardFooter className="grid overflow-x-auto py-2">
+      {/* <CardFooter className="grid overflow-x-auto border-t py-2">
+        <code>
+        {JSON.stringify(origin)}
+        {origin} и {destination}
+        </code>
         <code>airline: {flightData.airline}</code>
         <code>departure_at: {flightData.departure_at}</code>
+        <code>return_at: {flightData.return_at}</code>
         <code>destination: {flightData.destination}</code>
         <code>destination_airport: {flightData.destination_airport}</code>
         <code>duration: {flightData.duration}</code>
         <code>duration_back: {flightData.duration_back}</code>
         <code>duration_to: {flightData.duration_to}</code>
         <code>flight_number: {flightData.flight_number}</code>
-        <code>link: {flightData.link}</code>
         <code>origin: {flightData.origin}</code>
         <code>origin_airport: {flightData.origin_airport}</code>
         <code>price: {flightData.price}</code>
         <code>return_transfers: {flightData.return_transfers}</code>
         <code>transfers: {flightData.transfers}</code>
-      </CardFooter>
+        <code>link: {flightData.link}</code>
+      </CardFooter> */}
     </Card>
   )
 }

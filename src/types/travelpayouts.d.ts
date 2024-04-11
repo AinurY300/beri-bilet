@@ -7,6 +7,33 @@ type Cases = {
   da: string
 }
 
+type Coordinates = {
+  lon: number
+  lat: number
+}
+
+type NameTranslations = {
+  de?: string
+  en?: string
+  "zh-CN"?: string
+  tr?: string
+  ru?: string
+  it?: string
+  es?: string
+  fr?: string
+  th?: string
+}
+
+export type Cites = {
+  code: string
+  name: string
+  cases: Cases
+  coordinates: Coordinates
+  time_zone: string
+  name_translations: NameTranslations
+  country_code: string
+}
+
 export type AutocompleteResponse = {
   id: string
   type: "city" | "country" | "airport"
