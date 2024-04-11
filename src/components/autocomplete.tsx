@@ -4,15 +4,22 @@ import { Command as CommandPrimitive, CommandInput } from "cmdk"
 import { CommandGroup, CommandItem, CommandList } from "@/components/ui/command"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
-import { useState, useRef, useCallback, type KeyboardEvent, type ReactElement } from "react"
+import {
+  useState,
+  useRef,
+  useCallback,
+  type KeyboardEvent,
+  type ReactElement,
+  useEffect
+} from "react"
 import { nanoid } from "nanoid"
 
 type AutoCompleteProps<T extends Record<string, any>> = {
   items: T[]
   itemTitle: Extract<keyof T, string>
-  emptyMessage: string
+  emptyMessage?: string
   value?: T
-  onValueChange?: (value: T) => void
+  onSelect?: (value: T | null) => void
   onInputChange?: (value: string) => void
   itemText?: (item: T) => ReactElement
   isLoading?: boolean
@@ -28,17 +35,24 @@ export default function AutoComplete<T extends Record<string, any>>({
   emptyMessage,
   itemText,
   value,
-  onValueChange,
+  onSelect,
   onInputChange,
   disabled,
-  shouldFilter = false,
+  shouldFilter = true,
   isLoading = false
 }: AutoCompleteProps<T>) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [isOpen, setOpen] = useState(false)
-  const [selected, setSelected] = useState<(typeof items)[number]>(value as T)
+  const [selected, setSelected] = useState<(typeof items)[number] | null>(value || null)
   const [inputValue, setInputValue] = useState<string>(value?.[itemTitle] || "")
+
+  useEffect(() => {
+    if (!value) {
+      setSelected(null)
+      setInputValue("")
+    }
+  }, [value])
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -57,7 +71,7 @@ export default function AutoComplete<T extends Record<string, any>>({
         const itemToSelect = items.find(item => item[itemTitle] === input.value)
         if (itemToSelect) {
           setSelected(itemToSelect)
-          onValueChange?.(itemToSelect)
+          onSelect?.(itemToSelect)
         }
       }
 
@@ -65,22 +79,26 @@ export default function AutoComplete<T extends Record<string, any>>({
         input.blur()
       }
     },
-    [isOpen, items, onValueChange, itemTitle]
+    [isOpen, items, onSelect, itemTitle]
   )
 
   const handleBlur = useCallback(() => {
     setOpen(false)
-    setInputValue(selected?.[itemTitle])
-  }, [selected, itemTitle])
+    if (inputValue.length) setInputValue(selected?.[itemTitle] || "")
+    else {
+      setSelected(null)
+      onSelect?.(null)
+    }
+  }, [selected, itemTitle, inputValue, onSelect])
 
   const handleSelectOption = useCallback(
     (selectedItem: (typeof items)[number]) => {
       setInputValue(selectedItem[itemTitle])
       setSelected(selectedItem)
-      onValueChange?.(selectedItem)
+      onSelect?.(selectedItem)
       setOpen(false)
     },
-    [onValueChange, itemTitle]
+    [onSelect, itemTitle]
   )
 
   return (
@@ -95,7 +113,7 @@ export default function AutoComplete<T extends Record<string, any>>({
               onInputChange?.(e.target.value)
             }}
             onBlur={handleBlur}
-            onFocus={() => setOpen(true)}
+            onFocus={() => inputValue.length && setOpen(true)}
             placeholder={placeholder}
             disabled={disabled}
           />
@@ -131,11 +149,14 @@ export default function AutoComplete<T extends Record<string, any>>({
                   })}
                 </CommandGroup>
               ) : null}
-              {!isLoading ? (
+
+              {/* {!isLoading && inputValue.length ? setOpen(false) : null} */}
+
+              {/* {!isLoading && inputValue.length ? (
                 <CommandPrimitive.Empty className="select-none rounded-sm px-2 py-3 text-center text-sm">
                   {emptyMessage}
                 </CommandPrimitive.Empty>
-              ) : null}
+              ) : null} */}
             </CommandList>
           </div>
         ) : null}
@@ -143,95 +164,3 @@ export default function AutoComplete<T extends Record<string, any>>({
     </CommandPrimitive>
   )
 }
-
-// import { nanoid } from "nanoid"
-// import { useState, useRef, useEffect } from "react"
-// import { useElementSize, useFocus } from "@reactuses/core"
-// import { ArrowUpCircle, CheckCircle2, Circle, HelpCircle, LucideIcon, XCircle } from "lucide-react"
-
-// import { cn } from "@/lib/utils"
-// import { Input } from "@/components/ui/input"
-// import { Button } from "@/components/ui/button"
-// import {
-//   Command,
-//   CommandEmpty,
-//   CommandGroup,
-//   CommandInput,
-//   CommandItem,
-//   CommandList
-// } from "@/components/ui/command"
-// import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-// import { Skeleton } from "@/components/ui/skeleton"
-
-// export default function AutoComplete<T extends object, K extends keyof T>({
-//   items,
-//   itemTitle,
-//   itemValue
-// }: {
-//   items?: T[]
-//   itemTitle?: K
-//   itemValue?: K
-// }) {
-//   const inputRef = useRef<HTMLInputElement>(null)
-//   const commandRef = useRef<HTMLDivElement>(null)
-//   const [inputFocus, setInputFocus] = useFocus(inputRef)
-//   const [mounted, setMounted] = useState(true)
-//   const [inputWidth] = useElementSize(commandRef, { box: "border-box" })
-//   const [open, setOpen] = useState(false)
-//   const [inputValue, setInputValue] = useState("")
-//   const [selected, setSelected] = useState<T>()
-
-//   // useEffect(() => setMounted(true), [])
-
-//   //   if (!inputValue.length) setOpen(false)
-//   // }, [inputValue, inputFocus, setInputFocus])
-
-//   return (
-//     <Popover open={open}>
-//       <Command ref={commandRef}>
-//         <PopoverTrigger>
-//           {(mounted && (
-//             <Input
-//               ref={inputRef}
-//               placeholder={`${String(open)}, ${String(inputFocus)}`}
-//               value={inputValue}
-//               onChange={e => {
-//                 setInputValue(e.target.value)
-//                 setOpen(e.target.value ? true : false)
-//                 setTimeout(() => setInputFocus(true), 1)
-//               }}
-//               onFocus={() => {
-//                 setOpen(true)
-//                 setTimeout(() => setInputFocus(true), 1)
-//               }}
-//               onBlur={() => {
-//                 setTimeout(() => setOpen(false), 0)
-//               }}
-//             />
-//           )) || <Skeleton className="h-9" />}
-//         </PopoverTrigger>
-//         <PopoverContent className="p-0" style={{ width: inputWidth }} align="start">
-//           <CommandList>
-//             <CommandEmpty>No results found.</CommandEmpty>
-//             <CommandGroup>
-//               {items?.map(item => (
-//                 <CommandItem
-//                   key={nanoid()}
-//                   value={item[itemValue]}
-//                   onSelect={value => {
-//                     setSelected(value)
-//                     console.log(value)
-//                     setOpen(false)
-//                   }}
-//                 >
-//                   <span>{item[itemTitle as K]}</span>
-//                 </CommandItem>
-//               ))}
-//             </CommandGroup>
-//           </CommandList>
-//         </PopoverContent>
-//       </Command>
-//       {String(open)}
-//     </Popover>
-//   )
-// }

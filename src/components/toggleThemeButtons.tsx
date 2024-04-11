@@ -16,9 +16,9 @@ export default function ToggleThemeButtons() {
   if (!mounted) {
     return (
       <div className="flex gap-1">
-        <Skeleton className="h-9 w-10" />
-        <Skeleton className="h-9 w-10" />
-        <Skeleton className="h-9 w-10" />
+        <Skeleton className="h-10 w-10" />
+        <Skeleton className="h-10 w-10" />
+        <Skeleton className="h-10 w-10" />
       </div>
     )
   }

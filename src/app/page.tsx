@@ -1,45 +1,27 @@
-"use client"
-import TicketSearchForm from "@/components/forms/ticketSearchForm"
-import { useEffect, useState } from "react"
+import { TicketSearchForm } from "@/components/forms/TicketSearchForm"
+import { Separator } from "@/components/ui/separator"
+import { FlightSearchParams } from "@/components/forms/TicketSearchForm"
+import { fetchPricesForDates } from "@/lib/travelpayouts"
+import { FlightCard } from "@/components/flightCard"
+import { nanoid } from "nanoid"
 
-// type AutocompleteResponse = {
-//   iata: string
-//   name: string
-//   country_name: string
-//   coordinates: string
-// }
+export default async function Home({ searchParams }: { searchParams: FlightSearchParams }) {
+  const flights = await fetchPricesForDates(searchParams)
+  
 
-export default function Home() {
-  // const [isLoading, setLoading] = useState(false)
-  // const [isDisabled, setDisbled] = useState(false)
-  // const [value, setValue] = useState<AutocompleteResponse>()
-  // const [items, setItems] = useState<AutocompleteResponse[]>([])
-
-  // const airportSearch = async function (text: string) {
-  //   const res = await fetch(
-  //     `https://autocomplete.travelpayouts.com/places2?locale=ru&types[]=airport&types[]=city&term=${text}`
-  //   )
-  //   const data: AutocompleteResponse[] = await res.json()
-
-  //   setItems(data)
-  // }
-
-  // useEffect(() => {
-  //   console.log(value)
-  // }, [value])
+  // console.log(data)
 
   return (
-    <div className="grid grid-cols-12 gap-6">
+    <div className="container grid grid-cols-12">
       <div className="col-span-full">
-        <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-3xl">
-          Поиск дешёвых авиабилетов
-        </h1>
-        <p className="mt-2 leading-7">Помогаем вам экономить</p>
-      </div>
-      <aside className="col-span-4">
         <TicketSearchForm />
-      </aside>
-      <div className="col-span-8">фыв</div>
+      </div>
+      <div className="col-span-4"></div>
+      <div className="col-span-8 grid gap-2 py-2">
+        {flights.map(flight => (
+          <FlightCard key={nanoid()} flightData={flight} />
+        ))}
+      </div>
     </div>
   )
 }

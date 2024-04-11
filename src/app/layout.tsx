@@ -1,10 +1,11 @@
 import type { Metadata } from "next"
-import { Unbounded as FontSans } from "next/font/google"
+import { Jost as FontSans } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import "./globals.css"
 import Header from "@/components/Header"
-// Unbounded
+import { Toaster } from "@/components/ui/toaster"
+// Unbounded, Inter, Jost
 
 const fontSans = FontSans({
   subsets: ["latin", "cyrillic"],
@@ -26,7 +27,8 @@ export default function RootLayout({
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
-          <main className="container">{children}</main>
+          <main>{children}</main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
