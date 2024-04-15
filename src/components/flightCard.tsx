@@ -15,16 +15,6 @@ import Image from "next/image"
 import { format, formatDuration } from "date-fns"
 import { ru } from "date-fns/locale"
 import Link from "next/link"
-// import CitesJson from "../JSON/cites.json"
-
-const dateString: string = "2024-04-23T11:35:00+02:00"
-// const date: Date = new Date(dateString)
-const dateOptions: Intl.DateTimeFormatOptions = {
-  day: "numeric",
-  month: "long",
-  hour: "numeric",
-  minute: "numeric"
-}
 
 function getFlightDates(flight: Flight): [string, string, string | undefined, string | null] {
   const formatDate = (date: Date) => format(date, "d MMMM 'в' HH:mm", { locale: ru })
@@ -65,7 +55,6 @@ export async function FlightCard({ flightData }: { flightData: Flight }) {
           <div className="font-semibold">{price}</div>
         </div>
       </CardHeader>
-      {/* <Separator /> */}
       <CardContent className="grid gap-2 py-2">
         <div className="flex gap-4">
           <div>

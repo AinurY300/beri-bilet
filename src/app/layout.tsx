@@ -6,7 +6,6 @@ import "./globals.css"
 import Header from "@/components/Header"
 import { Toaster } from "@/components/ui/toaster"
 import Script from "next/script"
-// Unbounded, Inter, Jost
 
 const fontSans = FontSans({
   subsets: ["latin", "cyrillic"],

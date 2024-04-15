@@ -4,9 +4,7 @@ import { fetchPricesForDates } from "@/lib/travelpayouts"
 import { FlightCard } from "@/components/flightCard"
 import { nanoid } from "nanoid"
 import { TicketSearchFilter } from "@/components/forms/TicketSearchFilter"
-import { TicketSearchPagination } from "@/components/forms/TicketSearchPagination"
 import { FilterSearchParams } from "@/components/forms/TicketSearchFilter"
-// import Script from "next/script"
 
 export default async function Home({
   searchParams
@@ -16,7 +14,6 @@ export default async function Home({
   const flights = await fetchPricesForDates(searchParams)
   return (
     <div className="container grid gap-4 pb-4">
-      {/* <Script src="https://emrld.cc/MzEzODAy.js?t=313802"/> */}
       <TicketSearchForm />
       <TicketSearchFilter />
       <div className="grid gap-2 lg:grid-cols-2">

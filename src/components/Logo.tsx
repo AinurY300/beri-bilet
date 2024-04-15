@@ -7,12 +7,7 @@ export default function Logo() {
       <div className="rounded-md bg-current p-1">
         <PlaneIcon className="text-card" />
       </div>
-      <p className="text-lg font-black">
-        {/* бери билеты */}
-        {/* билетбери */}
-        Beribilet
-        {/* BERIBILET */}
-      </p>
+      <p className="text-lg font-black">Beribilet</p>
     </Link>
   )
 }

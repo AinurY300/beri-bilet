@@ -32,7 +32,6 @@ export default function AutoComplete<T extends Record<string, any>>({
   items,
   itemTitle,
   placeholder,
-  emptyMessage,
   itemText,
   value,
   onSelect,
@@ -61,12 +60,10 @@ export default function AutoComplete<T extends Record<string, any>>({
         return
       }
 
-      // Сохраняйте параметры, отображаемые, когда пользователь печатает
       if (!isOpen) {
         setOpen(true)
       }
 
-      // Это не поведение поля <input /> по умолчанию.
       if (event.key === "Enter" && input.value !== "") {
         const itemToSelect = items.find(item => item[itemTitle] === input.value)
         if (itemToSelect) {
@@ -149,14 +146,6 @@ export default function AutoComplete<T extends Record<string, any>>({
                   })}
                 </CommandGroup>
               ) : null}
-
-              {/* {!isLoading && inputValue.length ? setOpen(false) : null} */}
-
-              {/* {!isLoading && inputValue.length ? (
-                <CommandPrimitive.Empty className="select-none rounded-sm px-2 py-3 text-center text-sm">
-                  {emptyMessage}
-                </CommandPrimitive.Empty>
-              ) : null} */}
             </CommandList>
           </div>
         ) : null}

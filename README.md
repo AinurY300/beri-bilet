@@ -1,8 +1,6 @@
-Привет, исправь грамматические ошибки в этом readme.md документе
-
 ```
-pnpm install
-pnpm run dev
+npm install
+npm run dev
 ```
 
 ## **Beribilet** — [**beri-bilet.vercel.app**](beri-bilet.vercel.app)
